@@ -1,15 +1,23 @@
 // src/app/page.tsx
-import { Typography } from '@mui/material';
+import React from 'react';
+import AddItemForm from '../components/AddItemForm';
+import PantryList from '../components/PantryList';
+import { Typography, Container } from '@mui/material';
 
-export default function Home() {
+const Home = () => {
   return (
-    <>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Welcome to Pantry Tracker
+    <Container maxWidth="md">
+
+      <Typography variant="h6" component="h2" gutterBottom>
+        Add a new item:
       </Typography>
-      <Typography variant="body1">
-        Manage and track your pantry items effortlessly.
+      <AddItemForm />
+      <Typography variant="h6" component="h2" gutterBottom>
+        Pantry Items:
       </Typography>
-    </>
+      <PantryList />
+    </Container>
   );
-}
+};
+
+export default Home;
