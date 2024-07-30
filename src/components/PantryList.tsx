@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../firebaseConfig';
 import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
-import { List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { List, ListItem, ListItemText, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UpdateItemForm from './UpdateItemForm';
@@ -12,6 +12,7 @@ import UpdateItemForm from './UpdateItemForm';
 const PantryList = () => {
   const [items, setItems] = useState<any[]>([]);
   const [editingItem, setEditingItem] = useState<{ id: string, name: string, quantity: number } | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -43,6 +44,10 @@ const PantryList = () => {
     setEditingItem(null);
   };
 
+  const filteredItems = items.filter(item =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <>
       {editingItem ? (
@@ -53,19 +58,29 @@ const PantryList = () => {
           onClose={closeEditForm}
         />
       ) : (
-        <List>
-          {items.map(item => (
-            <ListItem key={item.id}>
-              <ListItemText primary={item.name} secondary={`Quantity: ${item.quantity}`} />
-              <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(item)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(item.id)}>
-                <DeleteIcon />
-              </IconButton>
-            </ListItem>
-          ))}
-        </List>
+        <div>
+          <TextField
+            label="Search Items"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <List>
+            {filteredItems.map(item => (
+              <ListItem key={item.id}>
+                <ListItemText primary={item.name} secondary={`Quantity: ${item.quantity}`} />
+                <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(item)}>
+                  <EditIcon />
+                </IconButton>
+                <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(item.id)}>
+                  <DeleteIcon />
+                </IconButton>
+              </ListItem>
+            ))}
+          </List>
+        </div>
       )}
     </>
   );
