@@ -4,6 +4,14 @@ import { Container, Typography } from "@mui/material";
 import Navbar from "../components/NavBar"; // Import the Navbar component
 import Footer from "../components/Footer";
 import Script from 'next/script';
+import Hotjar from '@hotjar/browser';
+import { GoogleAnalytics } from '@next/third-parties/google'
+import { GoogleTagManager } from '@next/third-parties/google'
+
+const siteId = 5077662;
+const hotjarVersion = 6;
+
+Hotjar.init(siteId, hotjarVersion);
 
 import "./globals.css";
 
@@ -40,23 +48,11 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Hotjar Analytics */}
-        <Script
-          id="HotjarAnalytics"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(h,o,t,j,a,r){
-                h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                h._hjSettings={hjid:2327305,hjsv:6};
-                a=o.getElementsByTagName('head')[0];
-                r=o.createElement('script');r.async=1;
-                r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                a.appendChild(r);
-              })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-            `,
-          }}
-        />
+      
       </head>
+      <GoogleAnalytics gaId="G-N8RLXQG6GK" />
+      <GoogleTagManager gtmId="GTM-TL5RVLM3" />
+
       <body className={inter.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
         <Container maxWidth="md" component="main" sx={{ flex: '1 0 auto', mt: 4 }}>
