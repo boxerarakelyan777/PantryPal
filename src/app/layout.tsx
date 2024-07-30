@@ -2,13 +2,15 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Container, Typography } from "@mui/material";
 import Navbar from "../components/NavBar"; // Import the Navbar component
+import Footer from "../components/Footer";
+
 
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Pantry Tracker",
+  title: "PantryPal",
   description: "Track and manage your pantry items",
 };
 
@@ -20,20 +22,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Pantry Tracker</title>
+        <title>PantryPalAI</title>
         <meta name="description" content="Track and manage your pantry items" />
-        <link rel="icon" href="/favicon.ico" />
+        
+        <link rel="icon" href="/FaviconIcon2.png" />
       </head>
-      <body className={inter.className}>
-        <Navbar /> {/* Add the Navbar component here */}
-        <Container maxWidth="md">
-          <main>{children}</main>
-          <footer>
-            <Typography variant="body2" color="textSecondary" align="center">
-              &copy; 2024 Pantry Tracker
-            </Typography>
-          </footer>
+      <body className={inter.className} style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        <Navbar />
+        <Container maxWidth="md" component="main" sx={{ flex: '1 0 auto', mt: 4 }}>
+          {children}
         </Container>
+        <Footer />
       </body>
     </html>
   );

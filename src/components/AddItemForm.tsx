@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { db } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import { Button, TextField, MenuItem, Select, InputLabel, FormControl, FormHelperText, Typography } from '@mui/material';
+import { Button, TextField, MenuItem, Select, InputLabel, FormControl, FormHelperText, Box } from '@mui/material';
 
 interface AddItemFormProps {
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
@@ -103,50 +103,45 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <TextField
-        label="Item Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-        error={Boolean(error)}
-        helperText={error && "Name is required."}
-      />
-      <TextField
-        label="Quantity"
-        type="number"
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-        required
-        error={Boolean(error)}
-        helperText={error && "Quantity is required."}
-      />
-      <FormControl fullWidth error={Boolean(error)}>
-        <InputLabel>Category</InputLabel>
-        <Select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-        >
-          {categories.map((category, index) => (
-            <MenuItem key={index} value={category}>{category}</MenuItem>
-          ))}
-        </Select>
-        <FormHelperText>{error && "Category is required."}</FormHelperText>
-      </FormControl>
-      <TextField
-        label="Expiration Date"
-        type="date"
-        value={expirationDate}
-        onChange={(e) => setExpirationDate(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        required
-        error={Boolean(error)}
-        helperText={error && "Expiration Date is required."}
-      />
-      <Button type="submit" variant="contained" color="primary">
-        Add Item
-      </Button>
-      {error && <Typography color="error">{error}</Typography>}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          label="Item Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+        />
+        <TextField
+          label="Quantity"
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+          required
+        />
+        <FormControl required fullWidth>
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {categories.map((category, index) => (
+              <MenuItem key={index} value={category}>{category}</MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{error && "Category is required."}</FormHelperText>
+        </FormControl>
+        <TextField
+          label="Expiration Date"
+          type="date"
+          value={expirationDate}
+          onChange={(e) => setExpirationDate(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          required
+        />
+        <Button type="submit" variant="contained" color="primary">
+          Add Item
+        </Button>
+        {error && <FormHelperText error>{error}</FormHelperText>}
+      </Box>
     </form>
   );
 };

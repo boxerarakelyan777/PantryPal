@@ -13,10 +13,13 @@ const Navbar: React.FC = () => {
       <Toolbar>
         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
           <Typography variant="h6" component="div" sx={{ marginLeft: '1rem' }} color={'black'}>
-            PantryPal
+            PantryPalAI
           </Typography>
         </Box>
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 2 }}>
+
+
+
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 2, }}>
           <Button
             sx={{ color: 'black', borderColor: 'white', textTransform: 'none', fontSize: '1rem' }}
             onClick={() => router.push('/')}
@@ -30,6 +33,8 @@ const Navbar: React.FC = () => {
             Demo
           </Button>
         </Box>
+
+        
         <Box sx={{ flexGrow: 1 }} /> {/* Spacer for aligning content in the center */}
       </Toolbar>
     </AppBar>
