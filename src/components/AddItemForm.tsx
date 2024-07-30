@@ -1,10 +1,7 @@
-// src/components/AddItemForm.tsx
-"use client";
-
 import React, { useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db, auth } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import { Button, TextField, MenuItem, Select, InputLabel, FormControl, FormHelperText, Box } from '@mui/material';
+import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Box, FormHelperText } from '@mui/material';
 
 interface AddItemFormProps {
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
@@ -80,21 +77,30 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
       return;
     }
     setError('');
+
     try {
-      const docRef = await addDoc(collection(db, 'pantryItems'), {
-        name,
-        quantity,
-        category,
-        expirationDate,
-      });
-      setItems(prevItems => [
-        ...prevItems,
-        { id: docRef.id, name, quantity, category, expirationDate }
-      ]);
-      setName('');
-      setQuantity(1);
-      setCategory('');
-      setExpirationDate('');
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const userId = currentUser.uid;
+        const docRef = await addDoc(collection(db, 'users', userId, 'pantryItems'), {
+          name,
+          quantity,
+          category,
+          expirationDate,
+          uid: userId, // Store the user's UID
+        });
+        setItems(prevItems => [
+          ...prevItems,
+          { id: docRef.id, name, quantity, category, expirationDate, uid: userId }
+        ]);
+        setName('');
+        setQuantity(1);
+        setCategory('');
+        setExpirationDate('');
+      } else {
+        setError('User is not authenticated.');
+        console.error('User is not authenticated');
+      }
     } catch (error) {
       console.error('Error adding document: ', error);
       setError('Failed to add item.');

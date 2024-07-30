@@ -1,9 +1,7 @@
-// src/components/PantryList.tsx
-"use client";
+import React, { useState, useEffect } from 'react';
+import { db, auth } from '../firebaseConfig';
+import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
 
-import React, { useState } from 'react';
-import { db } from '../firebaseConfig';
-import { doc, deleteDoc } from 'firebase/firestore';
 import { List, ListItem, ListItemText, IconButton, TextField, Autocomplete } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -13,7 +11,6 @@ interface PantryListProps {
   items: any[];
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
 }
-
 
 const categories = [
   "Fruits - Fresh fruits",
@@ -76,10 +73,29 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [filterExpirationDate, setFilterExpirationDate] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      if (auth.currentUser) {
+        const userUid = auth.currentUser.uid;
+        const q = query(collection(db, 'users', userUid, 'pantryItems'));
+        const querySnapshot = await getDocs(q);
+        const itemsArray = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setItems(itemsArray);
+      }
+      setLoading(false);
+    };
+
+    fetchItems();
+  }, [setItems]);
 
   const handleDelete = async (id: string) => {
     try {
-      await deleteDoc(doc(db, 'pantryItems', id));
+      await deleteDoc(doc(db, 'users', auth.currentUser?.uid || '', 'pantryItems', id));
       setItems(items.filter(item => item.id !== id));
     } catch (error) {
       console.error('Error deleting document: ', error);
@@ -101,6 +117,8 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
 
     return matchesSearch && matchesCategory && matchesExpirationDate;
   });
+
+  if (loading) return <div>Loading...</div>;
 
   return (
     <>

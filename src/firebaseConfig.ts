@@ -1,7 +1,7 @@
 // src/firebaseConfig.ts
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
-
+import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -17,8 +17,8 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Analytics
 
+export const auth = getAuth(app);
 
 // Initialize Firestore
 export const db = getFirestore(app);
