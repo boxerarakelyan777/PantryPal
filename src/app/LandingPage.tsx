@@ -4,13 +4,12 @@
 import React, { useState } from 'react';
 import { db } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import { Container, Grid, TextField, Button, Checkbox, FormControlLabel, Typography } from '@mui/material';
+import { Container, Grid, TextField, Button, Typography } from '@mui/material';
 
 const LandingPage: React.FC = () => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [wantsUpdates, setWantsUpdates] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
@@ -27,13 +26,11 @@ const LandingPage: React.FC = () => {
         firstName,
         lastName,
         email,
-        wantsUpdates,
       });
       setSuccess(true);
       setFirstName('');
       setLastName('');
       setEmail('');
-      setWantsUpdates(false);
     } catch (error) {
       console.error('Error adding document: ', error);
       setError('Failed to join the waitlist. Please try again.');
@@ -76,18 +73,6 @@ const LandingPage: React.FC = () => {
               onChange={(e) => setEmail(e.target.value)}
               fullWidth
               required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={wantsUpdates}
-                  onChange={(e) => setWantsUpdates(e.target.checked)}
-                  color="primary"
-                />
-              }
-              label="I want to receive product updates and information."
             />
           </Grid>
           {error && (
