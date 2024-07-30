@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import { db } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import { Button, TextField, MenuItem, Select, InputLabel, FormControl } from '@mui/material';
+import { Button, TextField, MenuItem, Select, InputLabel, FormControl, FormHelperText, Typography } from '@mui/material';
 
 interface AddItemFormProps {
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
@@ -71,9 +71,15 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const [quantity, setQuantity] = useState(1);
   const [category, setCategory] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name || !category || !expirationDate) {
+      setError('All fields are required.');
+      return;
+    }
+    setError('');
     try {
       const docRef = await addDoc(collection(db, 'pantryItems'), {
         name,
@@ -91,6 +97,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
       setExpirationDate('');
     } catch (error) {
       console.error('Error adding document: ', error);
+      setError('Failed to add item.');
     }
   };
 
@@ -101,6 +108,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
         value={name}
         onChange={(e) => setName(e.target.value)}
         required
+        error={Boolean(error)}
+        helperText={error && "Name is required."}
       />
       <TextField
         label="Quantity"
@@ -108,8 +117,10 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
         value={quantity}
         onChange={(e) => setQuantity(Number(e.target.value))}
         required
+        error={Boolean(error)}
+        helperText={error && "Quantity is required."}
       />
-      <FormControl fullWidth>
+      <FormControl fullWidth error={Boolean(error)}>
         <InputLabel>Category</InputLabel>
         <Select
           value={category}
@@ -120,6 +131,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
             <MenuItem key={index} value={category}>{category}</MenuItem>
           ))}
         </Select>
+        <FormHelperText>{error && "Category is required."}</FormHelperText>
       </FormControl>
       <TextField
         label="Expiration Date"
@@ -128,10 +140,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
         onChange={(e) => setExpirationDate(e.target.value)}
         InputLabelProps={{ shrink: true }}
         required
+        error={Boolean(error)}
+        helperText={error && "Expiration Date is required."}
       />
       <Button type="submit" variant="contained" color="primary">
         Add Item
       </Button>
+      {error && <Typography color="error">{error}</Typography>}
     </form>
   );
 };

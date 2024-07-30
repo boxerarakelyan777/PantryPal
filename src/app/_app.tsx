@@ -1,12 +1,15 @@
-import React from 'react'; // Add this line
-import { AppProps } from 'next/app';
-import RootLayout from '../app/layout';
+// src/app/_app.tsx
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import theme from '../theme';
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }) {
   return (
-    <RootLayout>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
       <Component {...pageProps} />
-    </RootLayout>
+    </ThemeProvider>
   );
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Container, Typography } from "@mui/material";
+import Navbar from "../components/NavBar"; // Import the Navbar component
 
 import "./globals.css";
 
@@ -24,12 +25,8 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={inter.className}>
+        <Navbar /> {/* Add the Navbar component here */}
         <Container maxWidth="md">
-          <header>
-            <Typography variant="h2" component="h1">
-              Pantry Tracker
-            </Typography>
-          </header>
           <main>{children}</main>
           <footer>
             <Typography variant="body2" color="textSecondary" align="center">

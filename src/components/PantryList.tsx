@@ -14,6 +14,7 @@ interface PantryListProps {
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
+
 const categories = [
   "Fruits - Fresh fruits",
   "Fruits - Dried fruits",
@@ -71,7 +72,7 @@ const categories = [
 ];
 
 const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
-  const [editingItem, setEditingItem] = useState<{ id: string, name: string, quantity: number } | null>(null);
+  const [editingItem, setEditingItem] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string | null>(null);
   const [filterExpirationDate, setFilterExpirationDate] = useState('');
@@ -85,7 +86,7 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
     }
   };
 
-  const handleEdit = (item: { id: string, name: string, quantity: number }) => {
+  const handleEdit = (item: any) => {
     setEditingItem(item);
   };
 
@@ -108,6 +109,8 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
           id={editingItem.id}
           currentName={editingItem.name}
           currentQuantity={editingItem.quantity}
+          currentCategory={editingItem.category}
+          currentExpirationDate={editingItem.expirationDate}
           onClose={closeEditForm}
         />
       ) : (
