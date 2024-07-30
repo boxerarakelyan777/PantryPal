@@ -26,9 +26,6 @@ const Home = () => {
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h2" component="h1" gutterBottom>
-        Pantry Tracker
-      </Typography>
       <Typography variant="h6" component="h2" gutterBottom>
         Add a new item:
       </Typography>
