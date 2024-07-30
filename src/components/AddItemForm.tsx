@@ -6,17 +6,25 @@ import { db } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { Button, TextField } from '@mui/material';
 
-const AddItemForm = () => {
+interface AddItemFormProps {
+  setItems: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState(1);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addDoc(collection(db, 'pantryItems'), {
+      const docRef = await addDoc(collection(db, 'pantryItems'), {
         name,
         quantity,
       });
+      setItems(prevItems => [
+        ...prevItems,
+        { id: docRef.id, name, quantity }
+      ]);
       setName('');
       setQuantity(1);
     } catch (error) {

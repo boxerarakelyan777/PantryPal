@@ -1,31 +1,22 @@
 // src/components/PantryList.tsx
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { db } from '../firebaseConfig';
-import { collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import { doc, deleteDoc } from 'firebase/firestore';
 import { List, ListItem, ListItemText, IconButton, TextField } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UpdateItemForm from './UpdateItemForm';
 
-const PantryList = () => {
-  const [items, setItems] = useState<any[]>([]);
+interface PantryListProps {
+  items: any[];
+  setItems: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
   const [editingItem, setEditingItem] = useState<{ id: string, name: string, quantity: number } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    const fetchItems = async () => {
-      const querySnapshot = await getDocs(collection(db, 'pantryItems'));
-      const itemsArray = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setItems(itemsArray);
-    };
-
-    fetchItems();
-  }, []);
 
   const handleDelete = async (id: string) => {
     try {
