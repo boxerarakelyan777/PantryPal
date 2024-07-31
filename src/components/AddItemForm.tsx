@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Box, FormHelperText, Typography } from '@mui/material';
@@ -71,17 +71,24 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const [error, setError] = useState('');
   const [addCount, setAddCount] = useState<number>(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const storedCount = localStorage.getItem('unauthenticatedAddCount');
     setAddCount(storedCount ? parseInt(storedCount, 10) : 0);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
+
     if (!name || !category || !expirationDate) {
       setError('All fields are required.');
       return;
     }
+    if (expirationDate < currentDate) {
+      setError('Expiration date cannot be in the past.');
+      return;
+    }
+
     setError('');
 
     try {
