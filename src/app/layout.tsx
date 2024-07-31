@@ -14,7 +14,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PantryPal",
+  title: "PantryPalAI",
   description: "Track and manage your pantry items",
 };
 
@@ -30,9 +30,6 @@ export default function RootLayout({
         <meta name="description" content="Track and manage your pantry items" />
         <link rel="icon" href="/FaviconIcon2.png" />
 
-
-
-      
       </head>
      
       <GoogleTagManager gtmId="GTM-TL5RVLM3" />

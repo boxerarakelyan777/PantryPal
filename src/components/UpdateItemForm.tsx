@@ -1,11 +1,9 @@
-
 "use client";
 
-// src/components/UpdateItemForm.tsx
 import React, { useState } from 'react';
-import { db } from '../firebaseConfig';
+import { db, auth } from '../firebaseConfig';
 import { doc, updateDoc } from "firebase/firestore";
-import { Button, TextField, MenuItem, Select, InputLabel, FormControl, FormHelperText, Typography } from '@mui/material';
+import { Button, TextField, MenuItem, Select, FormControl, InputLabel, FormHelperText, Typography, Box } from '@mui/material';
 
 interface UpdateItemFormProps {
   id: string;
@@ -81,20 +79,34 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!name || !category || !expirationDate) {
       setError('All fields are required.');
       return;
     }
+
+    if (name === currentName && quantity === currentQuantity && category === currentCategory && expirationDate === currentExpirationDate) {
+      setError('No changes made.');
+      return;
+    }
+
     setError('');
+
     try {
-      const itemDoc = doc(db, "pantryItems", id);
-      await updateDoc(itemDoc, {
-        name,
-        quantity,
-        category,
-        expirationDate,
-      });
-      onClose(); // Close the form after updating
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const itemDoc = doc(db, "users", currentUser.uid, "pantryItems", id);
+        await updateDoc(itemDoc, {
+          name,
+          quantity,
+          category,
+          expirationDate,
+        });
+        onClose();
+      } else {
+        setError('User is not authenticated.');
+        console.error('User is not authenticated');
+      }
     } catch (error) {
       console.error('Error updating document: ', error);
       setError('Failed to update item.');
@@ -103,50 +115,56 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
 
   return (
     <form onSubmit={handleSubmit}>
-      <TextField
-        label="Item Name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        required
-        error={Boolean(error)}
-        helperText={error && "Name is required."}
-      />
-      <TextField
-        label="Quantity"
-        type="number"
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-        required
-        error={Boolean(error)}
-        helperText={error && "Quantity is required."}
-      />
-      <FormControl fullWidth error={Boolean(error)}>
-        <InputLabel>Category</InputLabel>
-        <Select
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          MenuProps={{ PaperProps: { style: { maxHeight: 300 } } }}
-        >
-          {categories.map((category, index) => (
-            <MenuItem key={index} value={category}>{category}</MenuItem>
-          ))}
-        </Select>
-        <FormHelperText>{error && "Category is required."}</FormHelperText>
-      </FormControl>
-      <TextField
-        label="Expiration Date"
-        type="date"
-        value={expirationDate}
-        onChange={(e) => setExpirationDate(e.target.value)}
-        InputLabelProps={{ shrink: true }}
-        required
-        error={Boolean(error)}
-        helperText={error && "Expiration Date is required."}
-      />
-      <Button type="submit" variant="contained" color="primary">
-        Update Item
-      </Button>
-      {error && <Typography color="error">{error}</Typography>}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField
+          label="Item Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          error={Boolean(error && name === '')}
+          helperText={error && name === '' ? "Name is required." : ""}
+        />
+        <TextField
+          label="Quantity"
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+          required
+          error={Boolean(error && quantity === 0)}
+          helperText={error && quantity === 0 ? "Quantity is required." : ""}
+        />
+        <FormControl fullWidth error={Boolean(error && !category)}>
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {categories.map((category, index) => (
+              <MenuItem key={index} value={category}>{category}</MenuItem>
+            ))}
+          </Select>
+          <FormHelperText>{error && !category ? "Category is required." : ""}</FormHelperText>
+        </FormControl>
+        <TextField
+          label="Expiration Date"
+          type="date"
+          value={expirationDate}
+          onChange={(e) => setExpirationDate(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          required
+          error={Boolean(error && !expirationDate)}
+          helperText={error && !expirationDate ? "Expiration Date is required." : ""}
+        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+          <Button type="submit" variant="contained" color="primary">
+            Update Item
+          </Button>
+          <Button variant="outlined" color="secondary" onClick={onClose}>
+            Cancel
+          </Button>
+        </Box>
+        {error && <Typography color="error">{error}</Typography>}
+      </Box>
     </form>
   );
 };

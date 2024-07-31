@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { db, auth } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
-import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Box, FormHelperText } from '@mui/material';
+import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Box, FormHelperText, Typography } from '@mui/material';
 
 interface AddItemFormProps {
   setItems: React.Dispatch<React.SetStateAction<any[]>>;
@@ -69,6 +69,12 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const [category, setCategory] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [error, setError] = useState('');
+  const [addCount, setAddCount] = useState<number>(0);
+
+  React.useEffect(() => {
+    const storedCount = localStorage.getItem('unauthenticatedAddCount');
+    setAddCount(storedCount ? parseInt(storedCount, 10) : 0);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,7 +93,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           quantity,
           category,
           expirationDate,
-          uid: userId, // Store the user's UID
+          uid: userId,
         });
         setItems(prevItems => [
           ...prevItems,
@@ -98,8 +104,27 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
         setCategory('');
         setExpirationDate('');
       } else {
-        setError('User is not authenticated.');
-        console.error('User is not authenticated');
+        if (addCount < 2) {
+          const docRef = await addDoc(collection(db, 'unauthenticatedItems'), {
+            name,
+            quantity,
+            category,
+            expirationDate,
+          });
+          setItems(prevItems => [
+            ...prevItems,
+            { id: docRef.id, name, quantity, category, expirationDate }
+          ]);
+          const newCount = addCount + 1;
+          setAddCount(newCount);
+          localStorage.setItem('unauthenticatedAddCount', newCount.toString());
+          setName('');
+          setQuantity(1);
+          setCategory('');
+          setExpirationDate('');
+        } else {
+          setError('Please register to add more items.');
+        }
       }
     } catch (error) {
       console.error('Error adding document: ', error);
@@ -127,13 +152,13 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => setCategory(e.target.value as string)}
           >
             {categories.map((category, index) => (
               <MenuItem key={index} value={category}>{category}</MenuItem>
             ))}
           </Select>
-          <FormHelperText>{error && "Category is required."}</FormHelperText>
+          <FormHelperText>{!category && error ? "Category is required." : null}</FormHelperText>
         </FormControl>
         <TextField
           label="Expiration Date"
@@ -147,6 +172,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           Add Item
         </Button>
         {error && <FormHelperText error>{error}</FormHelperText>}
+        {addCount === 2 && !auth.currentUser && (
+          <Typography color="error">
+            You have reached the limit for adding items. Please register to add more.
+          </Typography>
+        )}
       </Box>
     </form>
   );

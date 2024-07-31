@@ -27,6 +27,7 @@ const Navbar: React.FC = () => {
       console.error('Error logging out:', error);
     }
   };
+
   return (
     <AppBar position="static" style={{ background: 'transparent', boxShadow: 'none' }}>
       <Toolbar>
@@ -36,9 +37,7 @@ const Navbar: React.FC = () => {
           </Typography>
         </Box>
 
-
-
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 2, }}>
+        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 2 }}>
           <Button
             sx={{ color: 'black', borderColor: 'white', textTransform: 'none', fontSize: '1rem' }}
             onClick={() => router.push('/')}
@@ -53,7 +52,6 @@ const Navbar: React.FC = () => {
           </Button>
         </Box>
 
-
         <Box sx={{ display: 'flex', gap: 2 }}>
           {isAuthenticated ? (
             <Button
@@ -64,23 +62,22 @@ const Navbar: React.FC = () => {
             </Button>
           ) : (
             <>
-
               <Button
-            sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
-            onClick={() => router.push('/register')}
-          >
-            Register
-          </Button>
-          <Button
-            sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
-            onClick={() => router.push('/login')}
-          >
-            Login
-          </Button>
+                sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
+                onClick={() => router.push('/register')}
+              >
+                Register
+              </Button>
+              <Button
+                sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
+                onClick={() => router.push('/login')}
+              >
+                Login
+              </Button>
             </>
           )}
         </Box>
-        
+
         <Box sx={{ flexGrow: 1 }} /> {/* Spacer for aligning content in the center */}
       </Toolbar>
     </AppBar>

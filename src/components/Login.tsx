@@ -1,26 +1,44 @@
 // src/components/Login.tsx
 "use client";
 
-import React, { useState } from 'react';
-import { auth } from '../firebaseConfig';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
-import { Container, TextField, Button, Typography, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { auth, googleProvider } from '../firebaseConfig';
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth'; // Correct import
+import { Container, TextField, Button, Typography, Box, Snackbar, Alert } from '@mui/material';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [showVerificationMessage, setShowVerificationMessage] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('verificationSent') === 'true') {
+      setShowVerificationMessage(true);
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/pantry'); // Redirect to the pantry page on successful login
+      router.push('/pantry'); // Redirect to pantry page after successful login
     } catch (error: any) {
-      setError(error.message); // Display specific error message
+      setError(error.message);
       console.error('Error logging in:', error);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+      router.push('/pantry'); // Redirect to pantry page after successful login
+    } catch (error: any) {
+      setError(error.message);
+      console.error('Error logging in with Google:', error);
     }
   };
 
@@ -58,7 +76,27 @@ const Login = () => {
             Login
           </Button>
         </form>
+        <Button
+          variant="outlined"
+          color="primary"
+          fullWidth
+          sx={{ mt: 2 }}
+          onClick={handleGoogleLogin}
+        >
+          Login with Google
+        </Button>
       </Box>
+
+      {/* Snackbar for email verification notification */}
+      <Snackbar
+        open={showVerificationMessage}
+        autoHideDuration={5000} // 5 seconds
+        onClose={() => setShowVerificationMessage(false)}
+      >
+        <Alert severity="info" sx={{ width: '100%' }}>
+          A verification email has been sent to your email address. Please verify your account.
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
