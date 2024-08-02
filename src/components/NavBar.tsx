@@ -2,10 +2,10 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { auth } from '../firebaseConfig';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
+
 
 const Navbar: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,58 +29,37 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <AppBar position="static" style={{ background: 'transparent', boxShadow: 'none' }}>
-      <Toolbar>
-        <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h6" component="div" sx={{ marginLeft: '1rem' }} color={'black'}>
-            PantryPalAI
-          </Typography>
-        </Box>
+    <div className="navbar">
+      <div className="navbar-logo">
+        <span className="gradient-textsmall">PantryPalAI</span>
+      </div>
 
-        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: 2 }}>
-          <Button
-            sx={{ color: 'black', borderColor: 'white', textTransform: 'none', fontSize: '1rem' }}
-            onClick={() => router.push('/')}
-          >
-            Home
-          </Button>
-          <Button
-            sx={{ color: 'black', borderColor: 'white', textTransform: 'none', fontSize: '1rem' }}
-            onClick={() => router.push('/pantry')}
-          >
-            Demo
-          </Button>
-        </Box>
+      <div className="navbar-links">
+        <button className="nav-button" onClick={() => router.push('/')}>
+          Home
+        </button>
+        <button className="nav-button" onClick={() => router.push('/pantry')}>
+          Dashboard
+        </button>
+      </div>
 
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          {isAuthenticated ? (
-            <Button
-              sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
-          ) : (
-            <>
-              <Button
-                sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
-                onClick={() => router.push('/register')}
-              >
-                Register
-              </Button>
-              <Button
-                sx={{ color: 'black', textTransform: 'none', fontSize: '1rem' }}
-                onClick={() => router.push('/login')}
-              >
-                Login
-              </Button>
-            </>
-          )}
-        </Box>
-
-        <Box sx={{ flexGrow: 1 }} /> {/* Spacer for aligning content in the center */}
-      </Toolbar>
-    </AppBar>
+      <div className="navbar-auth">
+        {isAuthenticated ? (
+          <button className="nav-button" onClick={handleLogout}>
+            Logout
+          </button>
+        ) : (
+          <>
+            <button className="nav-button" onClick={() => router.push('/register')}>
+              Register
+            </button>
+            <button className="nav-button" onClick={() => router.push('/login')}>
+              Login
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 

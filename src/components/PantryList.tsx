@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../firebaseConfig';
-import { collection, query, where, getDocs, deleteDoc, doc } from 'firebase/firestore';
-
-import { List, ListItem, ListItemText, IconButton, TextField, Autocomplete } from '@mui/material';
+import { collection, query, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { Container, Grid, Box, Typography, List, ListItem, ListItemText, IconButton, TextField, Autocomplete, Modal } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import UpdateItemForm from './UpdateItemForm';
@@ -121,26 +120,46 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
   if (loading) return <div>Loading...</div>;
 
   return (
-    <>
-      {editingItem ? (
-        <UpdateItemForm
-          id={editingItem.id}
-          currentName={editingItem.name}
-          currentQuantity={editingItem.quantity}
-          currentCategory={editingItem.category}
-          currentExpirationDate={editingItem.expirationDate}
-          onClose={closeEditForm}
-        />
-      ) : (
-        <div>
+    <Container maxWidth="xl" sx={{ padding: '2rem 0' }}>
+      <Typography className="gradient-textmedium" align="center" gutterBottom>Your Pantry</Typography>
+      <Grid container spacing={4} justifyContent="center" alignItems="center">
+        {/* Search and Filter Fields */}
+        <Grid item xs={12} sm={4}>
           <TextField
             label="Search Items"
-            variant="outlined"
+            variant="filled"
             fullWidth
             margin="normal"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{
+              backgroundColor: '#f5f5f5',
+              borderRadius: '10px',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'transparent',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'gray',
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'gray',
+                fontWeight: "bold",
+              },
+              '& .MuiInputBase-root': {
+                color: 'black',
+              },
+            }}
           />
+        </Grid>
+        <Grid item xs={12} sm={4}>
           <Autocomplete
             options={categories}
             value={filterCategory}
@@ -150,32 +169,120 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
             getOptionLabel={(option) => option}
             filterSelectedOptions
             freeSolo
+            sx={{
+              backgroundColor: '#f5f5f5',
+              borderRadius: '10px',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'transparent',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'gray',
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'gray',
+                fontWeight: "bold",
+              },
+              '& .MuiInputBase-root': {
+                color: 'black',
+              },
+            }}
           />
+        </Grid>
+        <Grid item xs={12} sm={4}>
           <TextField
             label="Filter by Expiration Date"
             type="date"
             fullWidth
+            variant="filled"
             margin="normal"
             value={filterExpirationDate}
             onChange={(e) => setFilterExpirationDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
+            sx={{
+              backgroundColor: '#f5f5f5',
+              borderRadius: '10px',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'transparent',
+                },
+              },
+              '& .MuiInputLabel-root': {
+                color: 'gray',
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'gray',
+                fontWeight: "bold",
+              },
+              '& .MuiInputBase-root': {
+                color: 'black',
+              },
+            }}
           />
-          <List>
-            {filteredItems.map(item => (
-              <ListItem key={item.id}>
-                <ListItemText primary={item.name} secondary={`Quantity: ${item.quantity}`} />
+        </Grid>
+      </Grid>
+
+      {/* List of Items */}
+      <Box sx={{ mt: 4 }}>
+        <List sx={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '10px', padding: '20px' }}>
+          {filteredItems.map(item => (
+            <ListItem
+              key={item.id}
+              sx={{
+                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                padding: '10px 0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              <ListItemText
+                primary={item.name}
+                secondary={`Quantity: ${item.quantity}`}
+                sx={{ color: 'white' }}
+              />
+              <Box>
                 <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(item)}>
-                  <EditIcon />
+                  <EditIcon sx={{ color: 'white' }} />
                 </IconButton>
                 <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(item.id)}>
-                  <DeleteIcon />
+                  <DeleteIcon sx={{ color: 'white' }} />
                 </IconButton>
-              </ListItem>
-            ))}
-          </List>
-        </div>
+              </Box>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+
+      {editingItem && (
+        <Modal open={!!editingItem} onClose={closeEditForm}>
+          <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: 2, boxShadow: 1, maxWidth: 600, mx: 'auto', mt: 4 }}>
+            <UpdateItemForm
+              id={editingItem.id}
+              currentName={editingItem.name}
+              currentQuantity={editingItem.quantity}
+              currentCategory={editingItem.category}
+              currentExpirationDate={editingItem.expirationDate}
+              onClose={closeEditForm}
+              setItems={setItems}
+            />
+          </Box>
+        </Modal>
       )}
-    </>
+    </Container>
   );
 };
 

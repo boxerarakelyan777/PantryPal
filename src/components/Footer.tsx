@@ -2,36 +2,43 @@
 "use client";
 
 import React from 'react';
-import { Box, Container, Typography, Link } from '@mui/material';
 
 const Footer: React.FC = () => {
   return (
-    <Box
-      component="footer"
-      sx={{
-        py: 3,
-        px: 2,
-        mt: 'auto',
-        backgroundColor: (theme) => theme.palette.grey[800],
-        color: 'white',
-        textAlign: 'center',
-      }}
-    >
-      <Container maxWidth="md">
-        <Typography variant="body1">
-          &copy; 2024 PantryPalAI. All rights reserved.
-        </Typography>
-        <Typography variant="body2">
-          <Link href="#" color="inherit" underline="hover">
-            Terms of Service
-          </Link>{' '}
-          |{' '}
-          <Link href="#" color="inherit" underline="hover">
-            Privacy Policy
-          </Link>
-        </Typography>
-      </Container>
-    </Box>
+    <footer className="footer">
+      <div className="footer-container">
+        <div className="footer-section">
+          <h3>PantryPalAI</h3>
+          <p>Track and manage your pantry items with ease. Stay organized and never let your groceries go to waste.</p>
+        </div>
+        <div className="footer-section">
+          <h4>Quick Links</h4>
+          <ul className="footer-links">
+            <li><a href="/" className="footer-link">Home</a></li>
+            <li><a href="/pantry" className="footer-link">Demo</a></li>
+            <li><a href="#" className="footer-link">Features</a></li>
+          </ul>
+        </div>
+        <div className="footer-section">
+          <h4>Legal</h4>
+          <ul className="footer-links">
+            <li><a href="#" className="footer-link">Privacy Policy</a></li>
+            <li><a href="#" className="footer-link">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div className="footer-section">
+          <h4>Connect</h4>
+          <ul className="footer-links">
+            <li><a href="https://www.linkedin.com/in/rudik-arakelyan/" className="footer-link">LinkedIn</a></li>
+            <li><a href="https://x.com/boxerarakelyan" className="footer-link">Twitter</a></li>
+            <li><a href="https://github.com/boxerarakelyan777" className="footer-link">GitHub</a></li>
+          </ul>
+        </div>
+      </div>
+      <div className="footer-bottom">
+        <p>&copy; 2024 PantryPalAI. All rights reserved.</p>
+      </div>
+    </footer>
   );
 };
 

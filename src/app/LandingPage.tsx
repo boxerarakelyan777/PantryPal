@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useState } from 'react';
+
 import { db } from '../firebaseConfig';
 import { collection, addDoc } from 'firebase/firestore';
 import { Container, Grid, TextField, Button, Typography } from '@mui/material';
@@ -38,11 +39,11 @@ const LandingPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="sm" style={{ padding: '2rem 0' }}>
-      <Typography variant="h3" component="h1" align="center" gutterBottom>
+    <Container maxWidth="sm" style={{ padding: '2rem 0', marginTop: "150px"}}>
+      <Typography className="gradient-text" align="center" >
         Join Our Waitlist
       </Typography>
-      <Typography variant="h6" align="center" gutterBottom>
+      <Typography className="gradient-textsmall" variant="h6" align="center" gutterBottom>
         Be the first to know when our app launches!
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -51,18 +52,76 @@ const LandingPage: React.FC = () => {
             <TextField
               label="First Name"
               value={firstName}
+              variant="filled"
               onChange={(e) => setFirstName(e.target.value)}
               fullWidth
               required
+              sx={{
+                backgroundColor: '#f5f5f5', // Bright grey background color
+                borderRadius: '25px',        // Rounded corners
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'transparent',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'gray',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'gray', // Prevent the label from turning blue
+                  fontWeight: "bold",
+                  borderColor: "white",
+                  
+                  
+                },
+                '& .MuiInputBase-root': {
+                  color: 'black',
+                },
+              }}
             />
           </Grid>
           <Grid item xs={12}>
             <TextField
               label="Last Name"
               value={lastName}
+              variant="filled"
               onChange={(e) => setLastName(e.target.value)}
               fullWidth
               required
+              sx={{
+                backgroundColor: '#f5f5f5',
+                borderRadius: '25px',
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'transparent',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'gray',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'gray', // Prevent the label from turning blue
+                  fontWeight: "bold",
+                  borderColor: "white",
+                  
+                  
+                },
+                '& .MuiInputBase-root': {
+                  color: 'black',
+                },
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -70,11 +129,42 @@ const LandingPage: React.FC = () => {
               label="Email"
               type="email"
               value={email}
+              variant="filled"
               onChange={(e) => setEmail(e.target.value)}
               fullWidth
               required
+              sx={{
+                backgroundColor: '#f5f5f5',
+                borderRadius: '25px',
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'transparent',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'transparent',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'gray',
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: 'gray', // Prevent the label from turning blue
+                  fontWeight: "bold",
+                  borderColor: "white",
+                  
+                  
+                },
+                '& .MuiInputBase-root': {
+                  color: 'black',
+                },
+              }}
             />
           </Grid>
+
+
           {error && (
             <Grid item xs={12}>
               <Typography color="error">{error}</Typography>
@@ -86,7 +176,7 @@ const LandingPage: React.FC = () => {
             </Grid>
           )}
           <Grid item xs={12}>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
+            <Button className="gradient-button" type="submit" variant="contained" color="primary" fullWidth >
               Join Waitlist
             </Button>
           </Grid>

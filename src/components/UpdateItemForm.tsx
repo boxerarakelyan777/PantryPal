@@ -12,6 +12,7 @@ interface UpdateItemFormProps {
   currentCategory: string;
   currentExpirationDate: string;
   onClose: () => void;
+  setItems: React.Dispatch<React.SetStateAction<any[]>>; // Ensure this line is present if `setItems` is needed
 }
 
 const categories = [
@@ -123,6 +124,34 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           required
           error={Boolean(error && name === '')}
           helperText={error && name === '' ? "Name is required." : ""}
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+              
+              
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
         />
         <TextField
           label="Quantity"
@@ -132,8 +161,62 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           required
           error={Boolean(error && quantity === 0)}
           helperText={error && quantity === 0 ? "Quantity is required." : ""}
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+              
+              
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
         />
-        <FormControl fullWidth error={Boolean(error && !category)}>
+        <FormControl required fullWidth 
+                        sx={{
+                          backgroundColor: '#f5f5f5', // Bright grey background color
+                          borderRadius: '10px',        // Rounded corners
+                          '& .MuiOutlinedInput-root': {
+                            '& fieldset': {
+                              borderColor: 'transparent',
+                            },
+                            '&:hover fieldset': {
+                              borderColor: 'transparent',
+                            },
+                            '&.Mui-focused fieldset': {
+                              borderColor: 'transparent',
+                            },
+                          },
+                          '& .MuiInputLabel-root': {
+                            color: 'gray',
+                          },
+                          '& .MuiInputLabel-root.Mui-focused': {
+                            color: 'gray', // Prevent the label from turning blue
+                            fontWeight: "bold",
+                            borderColor: "white",
+                          },
+                          '& .MuiInputBase-root': {
+                            color: 'black',
+                          },
+                        }}        >
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
@@ -154,12 +237,40 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           required
           error={Boolean(error && !expirationDate)}
           helperText={error && !expirationDate ? "Expiration Date is required." : ""}
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+              
+              
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
         />
         <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
-          <Button type="submit" variant="contained" color="primary">
+          <Button type="submit" className="gradient-button">
             Update Item
           </Button>
-          <Button variant="outlined" color="secondary" onClick={onClose}>
+          <Button className="gradient-button" onClick={onClose}>
             Cancel
           </Button>
         </Box>

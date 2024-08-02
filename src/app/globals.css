@@ -7,4 +7,172 @@
   font-family: 'Roboto', sans-serif;
 }
 
+body {
+  background-color: #0e1111;;
+  position: relative;
+  z-index: 0;
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../../public/images/66963512bc084689ee1731e6_line-p-1600.webp");
+  background-repeat: no-repeat;
+  opacity: 0.3; /* Adjust opacity here */
+  z-index: -1; /* Ensure the pseudo-element is behind content */
+
+  
+}
+
+.normalgradient-text {
+  font-family: 'Roboto', sans-serif; /* Use the desired font family */
+
+  font-weight: bold; /* Make the text bold */
+  background: linear-gradient(45deg, #ecf5ef, #3a3535); /* Customize gradient colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradientBox {
+  background: linear-gradient(45deg, #ecf5ef, #3a3535); /* Customize gradient colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+}
+
+.gradient-text {
+  font-family: 'Roboto', sans-serif; /* Use the desired font family */
+  font-size: 4.1rem; /* Adjust the size as needed */
+  font-weight: bold; /* Make the text bold */
+  background: linear-gradient(45deg, #ecf5ef, #3a3535); /* Customize gradient colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-textmedium {
+  font-family: 'Roboto', sans-serif; /* Use the desired font family */
+  font-size: 2.95em; /* Adjust the size as needed */
+  font-weight: bold; /* Make the text bold */
+  background: linear-gradient(45deg, #ecf5ef, #3a3535); /* Customize gradient colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-textsmall {
+  font-family: 'Roboto', sans-serif; /* Use the desired font family */
+  font-size: 1.5rem; /* Adjust the size as needed */
+  font-weight: bold; /* Make the text bold */
+  background: linear-gradient(45deg, #ecf5ef, #3a3535); /* Customize gradient colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-button {
+  background: linear-gradient(90deg, #9a9c9b,  #272525); /* Customize gradient colors */
+  border: none; /* Remove default border */
+  color: white; /* Text color */
+  padding: 10px 20px; /* Button padding */
+  font-size: 16px; /* Font size */
+  font-weight: bold; /* Bold font */
+
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background 0.3s ease; /* Smooth transition */
+}
+
+.gradient-button:hover {
+  background: linear-gradient(45deg, #3f3e3e, #504f4f); /* Reverse gradient on hover */
+}
+.navbar {
+  background: transparent;
+  box-shadow: none;
+  padding: 1rem 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo {
+  flex-grow: 1;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 1.5rem;
+  position: center;
+  flex-grow: 1;
+}
+
+.navbar-auth {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-button {
+  color: white;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  font-family: sans-serif;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.nav-button:hover {
+  color: #ddd; /* Optional: add a hover effect */
+}
+
+.footer {
+  width: 100%;
+  background-color: #0e1111;
+  color: white;
+  text-align: center;
+  padding: 2rem 0;
+  margin-top: 10rem;
+}
+
+.footer-container {
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+.footer-section {
+  flex: 1 1 200px;
+  margin: 1rem;
+}
+
+.footer-section h3, .footer-section h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.footer-links {
+  list-style-type: none;
+  padding: 0;
+}
+
+.footer-link {
+  color: white;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.footer-link:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  margin-top: 2rem;
+  border-top: 1px solid #333;
+  padding-top: 1rem;
+  font-size: 0.875rem;
+}
 

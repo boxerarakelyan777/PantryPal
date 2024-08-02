@@ -78,7 +78,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
 
     if (!name || !category || !expirationDate) {
       setError('All fields are required.');
@@ -147,6 +147,34 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+              
+              
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
         />
         <TextField
           label="Quantity"
@@ -154,8 +182,65 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
           required
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+              
+              
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
         />
-        <FormControl required fullWidth>
+        <FormControl
+          required
+          fullWidth
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
+        >
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
@@ -174,8 +259,36 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           onChange={(e) => setExpirationDate(e.target.value)}
           InputLabelProps={{ shrink: true }}
           required
+          sx={{
+            backgroundColor: '#f5f5f5', // Bright grey background color
+            borderRadius: '10px',        // Rounded corners
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray', // Prevent the label from turning blue
+              fontWeight: "bold",
+              borderColor: "white",
+              
+              
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
         />
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" className="gradient-button">
           Add Item
         </Button>
         {error && <FormHelperText error>{error}</FormHelperText>}
