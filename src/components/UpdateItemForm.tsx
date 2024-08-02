@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from 'react';
-import { db, auth } from '../firebaseConfig';
+import React, { useState, useRef } from 'react';
+import { db, auth, storage } from '../firebaseConfig';
 import { doc, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel, FormHelperText, Typography, Box } from '@mui/material';
 
 interface UpdateItemFormProps {
@@ -11,10 +12,10 @@ interface UpdateItemFormProps {
   currentQuantity: number;
   currentCategory: string;
   currentExpirationDate: string;
+  currentImageUrl: string; // Add this property
   onClose: () => void;
-  setItems: React.Dispatch<React.SetStateAction<any[]>>; // Ensure this line is present if `setItems` is needed
+  setItems: React.Dispatch<React.SetStateAction<any[]>>;
 }
-
 const categories = [
   "Fruits - Fresh fruits",
   "Fruits - Dried fruits",
@@ -71,12 +72,25 @@ const categories = [
   "Miscellaneous - Supplements"
 ];
 
-const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, currentQuantity, currentCategory, currentExpirationDate, onClose }) => {
+const UpdateItemForm: React.FC<UpdateItemFormProps> = ({
+  id,
+  currentName,
+  currentQuantity,
+  currentCategory,
+  currentExpirationDate,
+  currentImageUrl,
+  onClose,
+  setItems
+}) => {
   const [name, setName] = useState(currentName);
   const [quantity, setQuantity] = useState(currentQuantity);
   const [category, setCategory] = useState(currentCategory);
   const [expirationDate, setExpirationDate] = useState(currentExpirationDate);
+  const [image, setImage] = useState<File | null>(null);
+  const [capturedPhoto, setCapturedPhoto] = useState<Blob | null>(null);
+  const [cameraOn, setCameraOn] = useState(false);
   const [error, setError] = useState('');
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,14 +100,21 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
       return;
     }
 
-    if (name === currentName && quantity === currentQuantity && category === currentCategory && expirationDate === currentExpirationDate) {
-      setError('No changes made.');
-      return;
-    }
-
     setError('');
 
     try {
+      let uploadedImageUrl = currentImageUrl; // Default to current image URL
+
+      if (image) {
+        const imageRef = ref(storage, `images/${auth.currentUser?.uid || 'guest'}/${image.name}`);
+        await uploadBytes(imageRef, image);
+        uploadedImageUrl = await getDownloadURL(imageRef);
+      } else if (capturedPhoto) {
+        const imageRef = ref(storage, `images/${auth.currentUser?.uid || 'guest'}/captured.jpg`);
+        await uploadBytes(imageRef, capturedPhoto);
+        uploadedImageUrl = await getDownloadURL(imageRef);
+      }
+
       const currentUser = auth.currentUser;
       if (currentUser) {
         const itemDoc = doc(db, "users", currentUser.uid, "pantryItems", id);
@@ -102,7 +123,11 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           quantity,
           category,
           expirationDate,
+          imageUrl: uploadedImageUrl, // Update image URL
         });
+        setItems(prevItems => prevItems.map(item => 
+          item.id === id ? { ...item, name, quantity, category, expirationDate, imageUrl: uploadedImageUrl } : item
+        ));
         onClose();
       } else {
         setError('User is not authenticated.');
@@ -112,6 +137,60 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
       console.error('Error updating document: ', error);
       setError('Failed to update item.');
     }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImage(e.target.files[0]);
+      setCapturedPhoto(null); // Reset captured photo if an image is uploaded
+    }
+  };
+
+  const startCamera = () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          setCameraOn(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play();
+          }
+        })
+        .catch(err => {
+          console.error("Error accessing the camera: ", err);
+        });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject instanceof MediaStream) {
+      videoRef.current.srcObject.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+    }
+    setCameraOn(false);
+  };
+
+  const takePicture = () => {
+    const video = videoRef.current;
+    if (video) {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+      canvas.toBlob(blob => {
+        if (blob) {
+          setCapturedPhoto(blob);
+          setImage(null); // Reset uploaded image if a photo is captured
+        }
+      });
+  
+      stopCamera();
+    }
+  };
+
+  const cancelCamera = () => {
+    stopCamera();
+    setCapturedPhoto(null);
   };
 
   return (
@@ -125,8 +204,8 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           error={Boolean(error && name === '')}
           helperText={error && name === '' ? "Name is required." : ""}
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -142,11 +221,9 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
-              
-              
             },
             '& .MuiInputBase-root': {
               color: 'black',
@@ -162,8 +239,8 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           error={Boolean(error && quantity === 0)}
           helperText={error && quantity === 0 ? "Quantity is required." : ""}
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -179,44 +256,45 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
-              
-              
             },
             '& .MuiInputBase-root': {
               color: 'black',
             },
           }}
         />
-        <FormControl required fullWidth 
-                        sx={{
-                          backgroundColor: '#f5f5f5', // Bright grey background color
-                          borderRadius: '10px',        // Rounded corners
-                          '& .MuiOutlinedInput-root': {
-                            '& fieldset': {
-                              borderColor: 'transparent',
-                            },
-                            '&:hover fieldset': {
-                              borderColor: 'transparent',
-                            },
-                            '&.Mui-focused fieldset': {
-                              borderColor: 'transparent',
-                            },
-                          },
-                          '& .MuiInputLabel-root': {
-                            color: 'gray',
-                          },
-                          '& .MuiInputLabel-root.Mui-focused': {
-                            color: 'gray', // Prevent the label from turning blue
-                            fontWeight: "bold",
-                            borderColor: "white",
-                          },
-                          '& .MuiInputBase-root': {
-                            color: 'black',
-                          },
-                        }}        >
+        <FormControl
+          required
+          fullWidth
+          sx={{
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': {
+                borderColor: 'transparent',
+              },
+              '&:hover fieldset': {
+                borderColor: 'transparent',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: 'transparent',
+              },
+            },
+            '& .MuiInputLabel-root': {
+              color: 'gray',
+            },
+            '& .MuiInputLabel-root.Mui-focused': {
+              color: 'gray',
+              fontWeight: "bold",
+              borderColor: "white",
+            },
+            '& .MuiInputBase-root': {
+              color: 'black',
+            },
+          }}
+        >
           <InputLabel>Category</InputLabel>
           <Select
             value={category}
@@ -238,8 +316,8 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
           error={Boolean(error && !expirationDate)}
           helperText={error && !expirationDate ? "Expiration Date is required." : ""}
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -255,17 +333,40 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({ id, currentName, curren
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
-              
-              
             },
             '& .MuiInputBase-root': {
               color: 'black',
             },
           }}
         />
+        <div>
+          <Button component="label" className="gradient-button">
+            Upload Image
+            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+          </Button>
+          <Button onClick={startCamera} className="gradient-button">
+            Take Picture
+          </Button>
+        </div>
+        {cameraOn && (
+          <div>
+            <video ref={videoRef} width="100%" height="auto" autoPlay />
+            <Button onClick={takePicture} className="gradient-button">
+              Capture
+            </Button>
+            <Button onClick={cancelCamera} className="gradient-button">
+              Cancel
+            </Button>
+          </div>
+        )}
+        {currentImageUrl && !image && !capturedPhoto && (
+          <img src={currentImageUrl} alt="Current Item" style={{ maxHeight: '200px', margin: '10px 0' }} />
+        )}
+        {image && <Typography>Selected Image: {image.name}</Typography>}
+        {capturedPhoto && <Typography>Captured Photo</Typography>}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
           <Button type="submit" className="gradient-button">
             Update Item

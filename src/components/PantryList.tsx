@@ -271,13 +271,14 @@ const PantryList: React.FC<PantryListProps> = ({ items, setItems }) => {
         <Modal open={!!editingItem} onClose={closeEditForm}>
           <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: 2, boxShadow: 1, maxWidth: 600, mx: 'auto', mt: 4 }}>
             <UpdateItemForm
-              id={editingItem.id}
-              currentName={editingItem.name}
-              currentQuantity={editingItem.quantity}
-              currentCategory={editingItem.category}
-              currentExpirationDate={editingItem.expirationDate}
-              onClose={closeEditForm}
-              setItems={setItems}
+                id={editingItem.id}
+                currentName={editingItem.name}
+                currentQuantity={editingItem.quantity}
+                currentCategory={editingItem.category}
+                currentExpirationDate={editingItem.expirationDate}
+                currentImageUrl={editingItem.imageUrl} // Add this line
+                onClose={closeEditForm}
+                setItems={setItems}
             />
           </Box>
         </Modal>

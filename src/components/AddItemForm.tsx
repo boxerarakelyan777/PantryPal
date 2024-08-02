@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { db, auth } from '../firebaseConfig';
+import React, { useState, useEffect, useRef } from 'react';
+import { db, auth, storage } from '../firebaseConfig'; // Include storage from firebaseConfig
 import { collection, addDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Firebase storage functions
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Box, FormHelperText, Typography } from '@mui/material';
 
 interface AddItemFormProps {
@@ -70,6 +71,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const [expirationDate, setExpirationDate] = useState('');
   const [error, setError] = useState('');
   const [addCount, setAddCount] = useState<number>(0);
+  const [image, setImage] = useState<File | null>(null);
+  const [cameraOn, setCameraOn] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [capturedPhoto, setCapturedPhoto] = useState<Blob | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const storedCount = localStorage.getItem('unauthenticatedAddCount');
@@ -92,6 +98,18 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
     setError('');
 
     try {
+      let uploadedImageUrl = '';
+
+      if (image) {
+        const imageRef = ref(storage, `images/${auth.currentUser?.uid || 'guest'}/${image.name}`);
+        await uploadBytes(imageRef, image);
+        uploadedImageUrl = await getDownloadURL(imageRef);
+      } else if (capturedPhoto) {
+        const imageRef = ref(storage, `images/${auth.currentUser?.uid || 'guest'}/captured.jpg`);
+        await uploadBytes(imageRef, capturedPhoto);
+        uploadedImageUrl = await getDownloadURL(imageRef);
+      }
+
       const currentUser = auth.currentUser;
       if (currentUser) {
         const userId = currentUser.uid;
@@ -100,16 +118,15 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           quantity,
           category,
           expirationDate,
+          imageUrl: uploadedImageUrl,
           uid: userId,
         });
         setItems(prevItems => [
           ...prevItems,
-          { id: docRef.id, name, quantity, category, expirationDate, uid: userId }
+          { id: docRef.id, name, quantity, category, expirationDate, imageUrl: uploadedImageUrl, uid: userId }
         ]);
-        setName('');
-        setQuantity(1);
-        setCategory('');
-        setExpirationDate('');
+        resetForm();
+        setSuccessMessage('Item added successfully!');
       } else {
         if (addCount < 2) {
           const docRef = await addDoc(collection(db, 'unauthenticatedItems'), {
@@ -117,18 +134,17 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
             quantity,
             category,
             expirationDate,
+            imageUrl: uploadedImageUrl,
           });
           setItems(prevItems => [
             ...prevItems,
-            { id: docRef.id, name, quantity, category, expirationDate }
+            { id: docRef.id, name, quantity, category, expirationDate, imageUrl: uploadedImageUrl }
           ]);
           const newCount = addCount + 1;
           setAddCount(newCount);
           localStorage.setItem('unauthenticatedAddCount', newCount.toString());
-          setName('');
-          setQuantity(1);
-          setCategory('');
-          setExpirationDate('');
+          resetForm();
+          setSuccessMessage('Item added successfully!');
         } else {
           setError('Please register to add more items.');
         }
@@ -137,6 +153,70 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
       console.error('Error adding document: ', error);
       setError('Failed to add item.');
     }
+  };
+
+  const resetForm = () => {
+    setName('');
+    setQuantity(1);
+    setCategory('');
+    setExpirationDate('');
+    setImage(null);
+    setCapturedPhoto(null);
+    stopCamera();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setImage(e.target.files[0]);
+      setCapturedPhoto(null); // Reset captured photo if an image is uploaded
+    }
+  };
+
+  const startCamera = () => {
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+          setCameraOn(true);
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            videoRef.current.play();
+          }
+        })
+        .catch(err => {
+          console.error("Error accessing the camera: ", err);
+        });
+    }
+  };
+
+  const stopCamera = () => {
+    if (videoRef.current && videoRef.current.srcObject instanceof MediaStream) {
+      videoRef.current.srcObject.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+    }
+    setCameraOn(false);
+  };
+
+  const takePicture = () => {
+    const video = videoRef.current;
+    if (video) {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+      canvas.toBlob(blob => {
+        if (blob) {
+          setCapturedPhoto(blob);
+          setImage(null); // Reset uploaded image if a photo is captured
+        }
+      });
+  
+      stopCamera();
+    }
+  };
+
+  const cancelCamera = () => {
+    stopCamera();
+    setCapturedPhoto(null);
   };
 
   return (
@@ -148,8 +228,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           onChange={(e) => setName(e.target.value)}
           required
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -165,11 +245,9 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
-              
-              
             },
             '& .MuiInputBase-root': {
               color: 'black',
@@ -183,8 +261,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           onChange={(e) => setQuantity(Number(e.target.value))}
           required
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -200,11 +278,9 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
-              
-              
             },
             '& .MuiInputBase-root': {
               color: 'black',
@@ -215,8 +291,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           required
           fullWidth
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -232,7 +308,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
             },
@@ -260,8 +336,8 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
           InputLabelProps={{ shrink: true }}
           required
           sx={{
-            backgroundColor: '#f5f5f5', // Bright grey background color
-            borderRadius: '10px',        // Rounded corners
+            backgroundColor: '#f5f5f5',
+            borderRadius: '10px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': {
                 borderColor: 'transparent',
@@ -277,20 +353,41 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
               color: 'gray',
             },
             '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray', // Prevent the label from turning blue
+              color: 'gray',
               fontWeight: "bold",
               borderColor: "white",
-              
-              
             },
             '& .MuiInputBase-root': {
               color: 'black',
             },
           }}
         />
+        <div>
+          <Button component="label" className="gradient-button">
+            Upload Image
+            <input type="file" accept="image/*" hidden onChange={handleImageChange} />
+          </Button>
+          <Button onClick={startCamera} className="gradient-button">
+            Take Picture
+          </Button>
+        </div>
+        {cameraOn && (
+          <div>
+            <video ref={videoRef} width="100%" height="auto" autoPlay />
+            <Button onClick={takePicture} className="gradient-button">
+              Capture
+            </Button>
+            <Button onClick={cancelCamera} className="gradient-button">
+              Cancel
+            </Button>
+          </div>
+        )}
+        {image && <Typography>Selected Image: {image.name}</Typography>}
+        {capturedPhoto && <Typography>Captured Photo</Typography>}
         <Button type="submit" className="gradient-button">
           Add Item
         </Button>
+        {successMessage && <Typography color="success">{successMessage}</Typography>}
         {error && <FormHelperText error>{error}</FormHelperText>}
         {addCount === 2 && !auth.currentUser && (
           <Typography color="error">
