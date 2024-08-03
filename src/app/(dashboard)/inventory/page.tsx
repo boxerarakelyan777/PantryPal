@@ -97,7 +97,7 @@ const PantryList: React.FC = () => {
       } else {
         setItems([]);
         setLoading(false);
-        router.push('/login'); // Redirect to login if not authenticated
+         // Redirect to login if not authenticated
       }
     });
 
