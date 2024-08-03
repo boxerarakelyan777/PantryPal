@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db, auth, storage } from '../firebaseConfig'; // Include storage from firebaseConfig
+import { db, auth, storage } from '../../../firebaseConfig'; // Include storage from firebaseConfig
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // Firebase storage functions
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel, Box, FormHelperText, Typography } from '@mui/material';

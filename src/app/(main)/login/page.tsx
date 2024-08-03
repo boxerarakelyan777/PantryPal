@@ -1,7 +1,8 @@
 // src/app/pantry/page.tsx
 "use client";
 import React, { Suspense } from 'react';
-import Login from '../../components/Login';
+import Login from '../../../components/Login';
+
 
 
 const LoginPage = () => {

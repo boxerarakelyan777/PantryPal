@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
         <button className="nav-button" onClick={() => router.push('/')}>
           Home
         </button>
-        <button className="nav-button" onClick={() => router.push('/pantry')}>
+        <button className="nav-button" onClick={() => router.push('/dashboard')}>
           Dashboard
         </button>
       </div>
