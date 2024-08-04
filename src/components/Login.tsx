@@ -26,7 +26,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/pantry'); // Redirect to pantry page after successful login
+      router.push('/dashboard'); // Redirect to pantry page after successful login
     } catch (error: any) {
       setError(error.message);
       console.error('Error logging in:', error);

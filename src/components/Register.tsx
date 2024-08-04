@@ -48,7 +48,7 @@ const Register = () => {
         emailVerified: true,
       });
 
-      router.push('/pantry');
+      router.push('/dashboard');
     } catch (error: any) {
       setError(error.message);
       console.error('Error registering with Google:', error);
