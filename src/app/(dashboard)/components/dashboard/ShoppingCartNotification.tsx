@@ -26,23 +26,25 @@ const ShoppingCartNotification = () => {
 
   return (
     <DashboardCard title="Shopping Cart">
-      <Box display="flex" alignItems="center" justifyContent="space-between">
-        <Box display="flex" alignItems="center">
-          <ShoppingCartIcon color="primary" sx={{ fontSize: 40, mr: 2 }} />
-          <Typography variant="h3" fontWeight="bold">
-            {itemCount}
+      <Box>
+        <Box display="flex" alignItems="center" justifyContent="space-between">
+          <Box display="flex" alignItems="center">
+            <ShoppingCartIcon color="primary" sx={{ fontSize: 40, mr: 2 }} />
+            <Typography variant="h3" fontWeight="bold">
+              {itemCount}
+            </Typography>
+          </Box>
+          <Typography variant="subtitle1" fontWeight="bold">
+            {itemCount === 1 ? 'Item' : 'Items'}
           </Typography>
         </Box>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {itemCount === 1 ? 'Item' : 'Items'}
-        </Typography>
-      </Box>
-      <Box mt={2}>
-        <Link href="/shoppingcart" passHref>
-          <Button variant="contained" color="primary" fullWidth>
-            View Shopping Cart
-          </Button>
-        </Link>
+        <Box mt={2}>
+          <Link href="/shoppingcart" passHref>
+            <Button variant="contained" color="primary" fullWidth>
+              View Shopping Cart
+            </Button>
+          </Link>
+        </Box>
       </Box>
     </DashboardCard>
   );
