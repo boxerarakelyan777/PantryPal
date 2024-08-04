@@ -4,6 +4,7 @@ import { Grid, Box } from '@mui/material';
 import PageContainer from '../components/container/PageContainer';
 import PantryTrackerNotifications from '../components/dashboard/PantryTrackerNotifications';
 import PantryItems from '../components/dashboard/Inventory';
+import ShoppingCartNotification from '../components/dashboard/ShoppingCartNotification';
 
 
 const Dashboard = () => {
@@ -18,6 +19,9 @@ const Dashboard = () => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <PantryItems />
+              </Grid>
+              <Grid item xs={12}>
+                <ShoppingCartNotification />
               </Grid>
 
             </Grid>
