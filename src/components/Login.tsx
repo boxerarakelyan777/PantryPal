@@ -17,7 +17,7 @@ const Login = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (searchParams.get('verificationSent') === 'true') {
+    if (searchParams?.get('verificationSent') === 'true') {
       setShowVerificationMessage(true);
     }
   }, [searchParams]);
