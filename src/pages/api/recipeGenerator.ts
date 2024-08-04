@@ -10,18 +10,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const { ingredients, usePantryOnly } = req.body;
       
-      let prompt;
-      if (usePantryOnly) {
-        prompt = `Generate a recipe using ONLY these ingredients: ${ingredients}. If there are not enough ingredients to make a complete recipe, respond with ONLY the text "Not enough ingredients". Otherwise, follow the format specified below.`;
-      } else {
-        prompt = `Generate any recipe. You can use ingredients not listed here. Follow the format specified below.`;
-      }
+      // Generate a random seed for variety
+      const randomSeed = Math.floor(Math.random() * 1000000);
+      
+      let prompt = usePantryOnly
+        ? `Generate a unique and creative recipe using ONLY these ingredients: ${ingredients}. Be innovative and make something even if there are limited ingredients. If it's absolutely impossible, respond with ONLY the text "Not enough ingredients". Otherwise, follow the format specified below.`
+        : `Generate a unique and creative recipe. You can use ingredients not listed here. Ensure the recipe is different each time. Follow the format specified below.`;
 
       const completion = await groq.chat.completions.create({
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful AI chef assistant that generates recipes. Format your response as follows:\n\n[Any message if necessary]\n\nRecipe: [Recipe Name]\nDifficulty: [Easy/Medium/Hard]\nTime: [Preparation and Cooking Time]\nServings: [Number of Servings]\n\nIngredients:\n• [Ingredient 1]\n• [Ingredient 2]\n...\n\nInstructions:\n1. [Step 1]\n2. [Step 2]\n...',
+            content: 'You are a creative AI chef assistant that generates unique and diverse recipes. Format your response as follows:\n\nRecipe: [Recipe Name]\nDifficulty: [Easy/Medium/Hard]\nTime: [Preparation and Cooking Time]\nServings: [Number of Servings]\n\nIngredients:\n• [Ingredient 1]\n• [Ingredient 2]\n...\n\nInstructions:\n1. [Step 1]\n2. [Step 2]\n...',
           },
           {
             role: 'user',
@@ -29,8 +29,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           },
         ],
         model: 'llama-3.1-70b-versatile',
-        temperature: 0.7,
-        max_tokens: 1000,
+        temperature: 0.9,
+        max_tokens: 500,
+        top_p: 1,
+        seed: randomSeed,
       });
 
       const recipe = completion.choices[0]?.message?.content || 'Sorry, I couldn\'t generate a recipe at this time.';

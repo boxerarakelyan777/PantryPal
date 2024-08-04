@@ -54,13 +54,13 @@ const baselightTheme = createTheme({
       600: "#2A3547",
     },
     text: {
-      primary: "#2A3547",
-      secondary: "#5A6A85",
+      primary: "#000000",
+      secondary: "#000000",
     },
     action: {
-      disabledBackground: "rgba(73,82,88,0.12)",
-      hoverOpacity: 0.02,
-      hover: "#f6f9fc",
+      disabledBackground: "rgba(0, 0, 0, 0.12)",
+      hoverOpacity: 0.08,
+      hover: "rgba(0, 0, 0, 0.08)",
     },
     divider: "#e5eaef",
   },
@@ -136,6 +136,73 @@ const baselightTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: "7px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'black',
+          color: 'white',
+          '&:hover': {
+            backgroundColor: 'black',
+            color: 'white',
+          },
+          '&.Mui-disabled': {
+            backgroundColor: 'rgba(0, 0, 0, 0.12)',
+            color: 'rgba(255, 255, 255, 0.7)',
+          },
+          '&.MuiButton-delete': {
+            backgroundColor: 'red',
+            color: 'white',
+            '&:hover': {
+              backgroundColor: 'darkred',
+            },
+            '&.Mui-disabled': {
+              backgroundColor: 'rgba(255, 0, 0, 0.5)',
+            },
+          },
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: 'black',
+          '&:hover': {
+            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          },
+        },
+      },
+    },
+    MuiListItemIcon: {
+      styleOverrides: {
+        root: {
+          color: 'black',
+        },
+      },
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        primary: {
+          color: 'black',
+        },
+        secondary: {
+          color: 'rgba(0, 0, 0, 0.7)',
+        },
+      },
+    },
+    MuiSvgIcon: {
+      styleOverrides: {
+        root: {
+          color: 'black',
+        },
+      },
+    },
+    MuiIcon: {
+      styleOverrides: {
+        root: {
+          color: 'black',
         },
       },
     },

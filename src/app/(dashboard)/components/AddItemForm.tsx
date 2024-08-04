@@ -9,64 +9,36 @@ interface AddItemFormProps {
 }
 
 const categories = [
-  "Fruits - Fresh fruits",
-  "Fruits - Dried fruits",
-  "Fruits - Canned fruits",
-  "Vegetables - Leafy greens",
-  "Vegetables - Root vegetables",
-  "Vegetables - Cruciferous vegetables",
-  "Vegetables - Other fresh vegetables",
-  "Vegetables - Frozen vegetables",
-  "Vegetables - Canned vegetables",
-  "Grains and Cereals - Whole grains",
-  "Grains and Cereals - Refined grains",
-  "Grains and Cereals - Breakfast cereals",
-  "Grains and Cereals - Flours and meal",
-  "Protein Foods - Meat",
-  "Protein Foods - Poultry",
-  "Protein Foods - Seafood",
-  "Protein Foods - Eggs",
-  "Protein Foods - Plant-based proteins",
-  "Protein Foods - Nuts and seeds",
-  "Dairy - Milk",
-  "Dairy - Cheese",
-  "Dairy - Yogurt",
-  "Dairy - Butter and cream",
-  "Fats and Oils - Cooking oils",
-  "Fats and Oils - Spreads",
-  "Fats and Oils - Dressings and mayonnaise",
-  "Beverages - Water",
-  "Beverages - Juices",
-  "Beverages - Sodas",
-  "Beverages - Coffee and tea",
-  "Beverages - Alcoholic beverages",
-  "Baked Goods - Bread",
-  "Baked Goods - Pastries",
-  "Baked Goods - Cakes and cookies",
-  "Snacks - Chips and crisps",
-  "Snacks - Crackers",
-  "Snacks - Popcorn",
-  "Snacks - Nuts and trail mixes",
-  "Condiments and Sauces - Ketchup, mustard",
-  "Condiments and Sauces - Soy sauce, hot sauce",
-  "Condiments and Sauces - Salad dressings",
-  "Condiments and Sauces - Jam and jelly",
-  "Spices and Herbs - Fresh herbs",
-  "Spices and Herbs - Dried herbs and spices",
-  "Sweets and Confectionery - Chocolate",
-  "Sweets and Confectionery - Candy",
-  "Sweets and Confectionery - Ice cream and frozen desserts",
-  "Prepared and Processed Foods - Canned soups and stews",
-  "Prepared and Processed Foods - Ready-to-eat meals",
-  "Prepared and Processed Foods - Frozen entrees",
-  "Miscellaneous - Baking ingredients",
-  "Miscellaneous - Cooking essentials",
-  "Miscellaneous - Supplements"
+  "Staples (Grains, Baking Supplies, Oils and Vinegars)",
+  "Canned and Jarred Goods (Vegetables, Fruits, Sauces, Soups and Broths)",
+  "Spices and Seasonings (Herbs, Spices, Seasoning Blends, Condiments)",
+  "Dry Goods (Beans and Lentils, Nuts and Seeds, Snacks)",
+  "Dairy and Alternatives (Milk and Cream, Cheese, Yogurt, Plant-based Alternatives)",
+  "Meat and Protein (Fresh Meat, Frozen Meat, Seafood, Plant-based Proteins)",
+  "Fruits and Vegetables (Fresh Fruits, Fresh Vegetables, Frozen Fruits, Frozen Vegetables)",
+  "Beverages (Water, Juices, Soft Drinks, Alcoholic Beverages)",
+  "Bakery and Bread (Bread, Pastries, Tortillas and Wraps)",
+  "Snacks and Sweets (Cookies, Candy, Chips)",
+  "Prepared and Frozen Meals (Frozen Dinners, Pizza, Pre-cooked Meals)",
+  "Miscellaneous (Special Dietary Items, Supplements, Baby Food)"
+];
+
+const measurements = [
+  "Count",
+  "Grams",
+  "Ounces",
+  "Pounds",
+  "Liters",
+  "Milliliters",
+  "Kilograms",
+  "Cups",
+  "Tablespoons",
+  "Teaspoons"
 ];
 
 const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const [name, setName] = useState('');
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState<string>('1');
   const [category, setCategory] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [error, setError] = useState('');
@@ -76,6 +48,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [capturedPhoto, setCapturedPhoto] = useState<Blob | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [measurement, setMeasurement] = useState('');
 
   useEffect(() => {
     const storedCount = localStorage.getItem('unauthenticatedAddCount');
@@ -86,7 +59,7 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
     e.preventDefault();
     const currentDate = new Date().toISOString().split('T')[0];
 
-    if (!name || !category || !expirationDate) {
+    if (!name || !category || !expirationDate || !measurement) {
       setError('All fields are required.');
       return;
     }
@@ -113,9 +86,11 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
       const currentUser = auth.currentUser;
       if (currentUser) {
         const userId = currentUser.uid;
+        const numericQuantity = parseFloat(quantity) || 0;
         const docRef = await addDoc(collection(db, 'users', userId, 'pantryItems'), {
           name,
-          quantity,
+          quantity: numericQuantity,
+          measurement,
           category,
           expirationDate,
           imageUrl: uploadedImageUrl,
@@ -123,22 +98,24 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
         });
         setItems(prevItems => [
           ...prevItems,
-          { id: docRef.id, name, quantity, category, expirationDate, imageUrl: uploadedImageUrl, uid: userId }
+          { id: docRef.id, name, quantity: numericQuantity, measurement, category, expirationDate, imageUrl: uploadedImageUrl, uid: userId }
         ]);
         resetForm();
         setSuccessMessage('Item added successfully!');
       } else {
         if (addCount < 2) {
+          const numericQuantity = parseFloat(quantity) || 0;
           const docRef = await addDoc(collection(db, 'unauthenticatedItems'), {
             name,
-            quantity,
+            quantity: numericQuantity,
+            measurement,
             category,
             expirationDate,
             imageUrl: uploadedImageUrl,
           });
           setItems(prevItems => [
             ...prevItems,
-            { id: docRef.id, name, quantity, category, expirationDate, imageUrl: uploadedImageUrl }
+            { id: docRef.id, name, quantity: numericQuantity, measurement, category, expirationDate, imageUrl: uploadedImageUrl }
           ]);
           const newCount = addCount + 1;
           setAddCount(newCount);
@@ -157,11 +134,12 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
 
   const resetForm = () => {
     setName('');
-    setQuantity(1);
+    setQuantity('1');
     setCategory('');
     setExpirationDate('');
     setImage(null);
     setCapturedPhoto(null);
+    setMeasurement('');
     stopCamera();
   };
 
@@ -254,39 +232,57 @@ const AddItemForm: React.FC<AddItemFormProps> = ({ setItems }) => {
             },
           }}
         />
-        <TextField
-          label="Quantity"
-          type="number"
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          required
-          sx={{
-            backgroundColor: '#f5f5f5',
-            borderRadius: '10px',
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                borderColor: 'transparent',
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <TextField
+            label="Quantity"
+            type="text"
+            value={quantity}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value === '' || /^\d*\.?\d*$/.test(value)) {
+                setQuantity(value);
+              }
+            }}
+            required
+            sx={{
+              backgroundColor: '#f5f5f5',
+              borderRadius: '10px',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&:hover fieldset': {
+                  borderColor: 'transparent',
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: 'transparent',
+                },
               },
-              '&:hover fieldset': {
-                borderColor: 'transparent',
+              '& .MuiInputLabel-root': {
+                color: 'gray',
               },
-              '&.Mui-focused fieldset': {
-                borderColor: 'transparent',
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'gray',
+                fontWeight: "bold",
+                borderColor: "white",
               },
-            },
-            '& .MuiInputLabel-root': {
-              color: 'gray',
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: 'gray',
-              fontWeight: "bold",
-              borderColor: "white",
-            },
-            '& .MuiInputBase-root': {
-              color: 'black',
-            },
-          }}
-        />
+              '& .MuiInputBase-root': {
+                color: 'black',
+              },
+            }}
+          />
+          <FormControl required sx={{ flex: 1, backgroundColor: '#f5f5f5', borderRadius: '10px', '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'transparent', }, '&:hover fieldset': { borderColor: 'transparent', }, '&.Mui-focused fieldset': { borderColor: 'transparent', }, }, '& .MuiInputLabel-root': { color: 'gray', }, '& .MuiInputLabel-root.Mui-focused': { color: 'gray', fontWeight: "bold", borderColor: "white", }, '& .MuiInputBase-root': { color: 'black', }, }}>
+            <InputLabel>Measurement</InputLabel>
+            <Select
+              value={measurement}
+              onChange={(e) => setMeasurement(e.target.value as string)}
+            >
+              {measurements.map((m, index) => (
+                <MenuItem key={index} value={m}>{m}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
         <FormControl
           required
           fullWidth

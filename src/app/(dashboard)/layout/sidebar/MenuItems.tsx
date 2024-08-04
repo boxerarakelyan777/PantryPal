@@ -3,7 +3,7 @@ import {
   IconLayoutDashboard,
   IconChefHat,
   IconBox,
-
+  IconBook,
 } from "@tabler/icons-react";
 
 import { uniqueId } from "lodash";
@@ -42,6 +42,12 @@ const Menuitems = [
     title: "Shopping Cart",
     icon: IconShoppingCart,
     href: "/shoppingcart",
+  },
+  {
+    id: uniqueId(),
+    title: "Saved Recipes",
+    icon: IconBook,
+    href: "/savedrecipes",
   },
 
 
