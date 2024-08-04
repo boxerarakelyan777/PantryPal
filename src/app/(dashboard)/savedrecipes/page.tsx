@@ -102,7 +102,7 @@ const SavedRecipesPage = () => {
     <PageContainer title="Saved Recipes" description="Your saved recipes">
       <DashboardCard title="Saved Recipes">
         {savedRecipes.length === 0 ? (
-          <Typography>You haven't saved any recipes yet.</Typography>
+          <Typography>You haven&apos;t saved any recipes yet.</Typography>
         ) : (
           <Grid container spacing={3}>
             {savedRecipes.map((recipe) => (
