@@ -5,6 +5,7 @@ import { db, auth, storage } from '../../../firebaseConfig';
 import { doc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Button, TextField, MenuItem, Select, FormControl, InputLabel, FormHelperText, Typography, Box } from '@mui/material';
+import Image from 'next/image';
 
 interface UpdateItemFormProps {
   id: string;
@@ -360,7 +361,13 @@ const UpdateItemForm: React.FC<UpdateItemFormProps> = ({
           </div>
         )}
         {currentImageUrl && !image && !capturedPhoto && (
-          <img src={currentImageUrl} alt="Current Item" style={{ maxHeight: '200px', margin: '10px 0' }} />
+          <Image 
+            src={currentImageUrl} 
+            alt="Current Item" 
+            width={200} 
+            height={200} 
+            style={{ maxHeight: '200px', margin: '10px 0', objectFit: 'contain' }} 
+          />
         )}
         {image && <Typography>Selected Image: {image.name}</Typography>}
         {capturedPhoto && <Typography>Captured Photo</Typography>}
