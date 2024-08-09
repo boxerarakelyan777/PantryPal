@@ -209,9 +209,9 @@ const PersonalChef = () => {
               variant="contained" 
               color="primary" 
               onClick={() => generateRecipe(true)}
-              disabled={isGenerating || pantryItems.length === 0}
+              disabled={generating || pantryItems.length === 0}
             >
-              {isGenerating ? 'Generating...' : 'Generate Recipe from Pantry'}
+              {generating ? 'Generating...' : 'Generate Recipe from Pantry'}
             </Button>
             <Button 
               variant="outlined" 
